@@ -1,0 +1,55 @@
+Bugs
+-Compile Time, Run Time, & Algorithmic Problems
+Solving run time bugs. Seg faults, writing/accessing memory
+-g turns on debugging info
+-Wall and -Wextra add lots of warning flags
+-Werror treats warnings as errors
+
+GDB is gnu debugger
+gdb 							to run gdb! DUH!
+quit 							quits the program
+file bug01   			opens the code to debug
+help 							get help
+start							start debugging//first break point is first function call
+list							shows the code arround the breakpoint
+run								will just blindly run code to end
+step							goes through one line at a time
+step i 						will through multiple lines (to next i?)
+									Dont have to retype command, pressing enter redoes last command
+									
+print $variable							will print the variable
+print $variable=number			changes the varialbe(good for loops)
+watch $variable							will tell you when the variable changes
+														also gives you the call frame (like scope)
+														can watch anything!
+break #								sets up a breakpoint at the line number
+info break						tells you about breakpoints
+
+
+
+if variable isnt defined at start of code, set up break point where it is
+defined then type watch variable and you will be set
+
+
+next										goes line by line until a function and runs 
+												the function silently
+												
+												
+												
+valgrind - a framework for running virtual tools(most common memcheck)
+				 - runs memcheck by default if told nothing else
+				 - still compile code with -g
+				 - not the tool for multithreaded code.
+
+==processid==    invalid write of size 8 bytes
+								at 0 blocks at a point of memory.  out of bounds
+								shows line number in /file.c:#
+								also tells you where you allocated the pointer
+								
+								gives heap summary and leak summary
+								
+								
+valgrind --vgdb=y --vgdb-error=0 ./a.out
+
+lets you use gdb with valgrind, valgrind gives instructions and waits for gdb
+need to use continue in gdb instead of start

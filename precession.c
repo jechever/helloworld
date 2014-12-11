@@ -1,0 +1,140 @@
+//Code to compute the calibration for the Kepler problem
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#define PI 3.14159265358979323846 
+
+/*Define parameters needed for R-K in x-axis*/
+double function_x(double x, double v_x, double t, double G, double m_s, double d, double x_s);
+double (*func_x)(double x, double v_x, double t, double G, double m_s, double d, double x_s);
+
+
+/*Define parameters needed for R-K in y-axis*/
+double function_y(double y, double v_y, double t, double G, double m_s, double d, double x_s);
+double (*func_y)(double y, double v_y, double t, double G, double m_s, double d, double x_s);
+
+//double rkn4_x(double (*func_x)(double x, double v_x, double t),
+//	double x[], double x0, double v_x[], double v0_x, double t, double h, long steps);
+
+double function_x(double x, double v_x, double t){
+  return (G*m_s/(d*d*d))*(x_s-x) ; //functon f in d^2x/dt^2 = f(x,v,t)
+}
+double function_y(double x, double v_x, double t){
+  return (G*m_s/(d*d*d))*(y_s-y) ; //functon f in d^2y/dt^2 = f(y,v,t)
+}
+
+double rkn4(double (*func_x)(double y, double v_y, double t),double (*func_x)(double x, double v_x, double t),
+	    double x[], double x0, double v_x[], double v0_x, double y[], double y0, double v_y[], double v0_y, double t, double h, long steps);
+
+
+int main(){
+	long steps = 10000000; //Number of steps
+	double v0_x=0.,t,h=0.000001;//Initial position, velocity, time, t step
+	double *x = malloc(steps * sizeof(double));  //Position array
+        double *v_x = malloc(steps * sizeof(double));//Velocity array
+	double *y = malloc(steps * sizeof(double));  //Position array
+        double *v_y = malloc(steps * sizeof(double));//Velocity array
+	double const m_e = 5.9736*pow(10,24);        //mass of the Earth
+	double const m_s = 1.9891*pow(10,30);        //mass of the Sun
+	long const a = 149598261;                    //Semi-major axis
+	double const e = 0.0167112303531389;         //Eccentricity 
+	double const G = 6.67428*pow(10,-11);        //Newton's constant
+	float const T_day = 86164.1 ;        //1 period = 1 day in sec
+	double const I_1 = 8.008*pow(10,37); //Moment of inertia about x-y plane
+	double const I_3 = 8.034*pow(10,38); //Moment of inertia about z-axis
+
+/* Set initial conditions: */
+
+	double const KE = (G*m_s*m_e/a)*((1/(1+e))-0.5);
+	double const x_0 = (a*(1+e)*m_s)/(m_e+m_s);
+	double const v0_x = 0.;
+	double const y_0 = 0.;
+	double x_s = m_e*x_0/m_s;
+	double y_s = 0.;
+	double const v0_y = sqrt(2*KE/(m_e*(1+m_e/m_s))); 
+	double d_x = x_s-x;  //x-proyection of distance between Earth and Sun
+	double d_y = y_s-y;  //y-projection of distance between Earth and Sun 
+	double d = sqrt(d_x*d_x+d_y*d_y); //E-S distance
+	//int const phi_0 = 0; 
+	//int const psi_0 = 0;
+	//double const theta_0 = 0.40928;
+       	//int const phi_dot_0 = 0;
+	//int const theta_dot_0 = 0; 
+	//double const psi_dot_0 = 2*PI/T_day;
+
+	//int main(){   
+/* Set pointer to point at the function to integrate. */
+	func_x = function_x;
+	func_y = function_y;
+
+/* Do integration. */
+	rkn4(func_x,,x0,v_x,v0_x,func_y,,y0,v_y,v0_y,t,h,steps);	    
+	//	rkn4_y(func_y,,y0,v_y,v0_y,t,h,steps);
+      
+
+/* Print results to STDOUT
+	long int ii;
+        for ( ii=0; ii<steps; ++ii){
+		printf(" %ld %e %e\n",ii,x[ii],v_x[ii]);
+        }
+
+*/
+//	return 0;
+//}
+
+double rkn4_x(double (*func_x)(double x, double v_x, double t), 
+	      double x[], double x0, double x_s, double v_x[],double v0_x, double t, double h, long steps)
+{
+	double kx1,kx2,kx3,kx4;
+	
+	x[0] = x0; //Initial position
+	v_x[0] = v0_x; //Initial velocity
+	y[0] = y0; //Initial position
+	v_y[0] = v0_y; //Initial velocity
+
+	long i;
+	for ( i=1; i<steps; ++i){
+		kx1 = func_x(x[i-1],v_x[i-1],t);	
+		kx2 = func_x(x[i-1]+h*v_x[i-1]/2.+h*h*kx1/8.,v_x[i-1]+h*kx1/2.,t+h/2.);
+                kx3 = func_x(x[i-1]+h*v_x[i-1]/2.+h*h*kx1/8.,v_x[i-1]+h*kx2/2.,t+h/2.);
+		kx4 = func_x(x[i-1]+h*v_x[i-1]+h*h*kx3/2.,v_x[i-1]+h*kx3,t+h);
+		
+		x_s[i] = -(m_e*x[i]/m_s);
+		vx_s[i] = -(m_e*v_x[i]/m_s);
+		x[i] = x[i-1] + h*v_x[i-1] + h*h*(kx1+kx2+kx3)/6.;
+		v_x[i] = v_x[i-1] + h*(kx1 + 2.*kx2 + 2.*kx3 + kx4)/6.;
+		//	x_s = (-m_e/m_s)*x[i];
+		//		t+=h;
+		//}
+	
+
+//Runga kutta loop for d2y/dt2 = F(y,t)
+
+
+//double rkn4_y(double (*func_y)(double y, double v_y, double t), 
+//	      double y[], double y0, double y_s, double v_y[],double v0_y, double t, double h, long steps)
+//{
+//	double ky1,ky2,ky3,ky4;
+//	
+//	y[0] = y0; //Initial position
+//	v_y[0] = v0_y; //Initial velocity
+	
+//	long j;
+//	for ( j=1; j<steps; ++j){
+		ky1 = func_y(y[i-1],v_y[i-1],t);	
+		ky2 = func_y(y[i-1]+h*v_y[i-1]/2.+h*h*ky1/8.,v_y[i-1]+h*ky1/2.,t+h/2.);
+                ky3 = func_y(y[i-1]+h*v_y[i-1]/2.+h*h*ky1/8.,v_y[i-1]+h*ky2/2.,t+h/2.);
+		ky4 = func_y(y[i-1]+h*v_y[i-1]+h*h*ky3/2.,v_y[i-1]+h*ky3,t+h);
+		
+		y_s[i] = -(m_e*y[i]/m_s);
+		vy_s[i] = -(m_e*v_y[i]/m_s);		
+		y[i] = y[i-1] + h*v_y[i-1] + h*h*(ky1+ky2+ky3)/6.;
+		v_y[i] = v_y[i-1] + h*(ky1 + 2.*ky2 + 2.*ky3 + ky4)/6.;
+		y_s = (-m_e/m_s)*y[i];
+		x_s = (-m_e/m_s)*x[i];
+		//vs_y[j] = (-m_e/m_s)*v_y[j];
+		t+=h;
+	}
+	
+	return 0;
+}

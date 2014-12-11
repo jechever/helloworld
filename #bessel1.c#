@@ -1,0 +1,9 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+double x;
+double y;
+
+int(bessel(int n)){
+  if(n==0){return 1}
+}

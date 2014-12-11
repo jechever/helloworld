@@ -1,0 +1,21 @@
+#include<stdlib.h>
+#include<math.h>
+#include<time.h>
+#include<stdio.h>
+#define y(x) sqrt(1-x*x)
+
+int main(){
+  double x;
+  int i, n=10000000, sum = 0;
+  double pi;
+  srand(time(NULL));
+  for(i=1;i<=n;i++){
+    x = rand()/(double)RAND_MAX;
+    if(y(x)>rand()/(double)RAND_MAX){
+      sum++;
+    }
+  }
+  pi=4.*sum/n;
+  printf("%f \n", pi); 
+  return 0;
+}

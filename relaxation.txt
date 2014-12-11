@@ -1,0 +1,5 @@
+Method of relaxation 
+
+Consider the Poisson Eq 
+- Want to solve the Poisson equation using method of relaxation 
+- Can rewrite derivative with respect to a coord by using the definition of derivative 

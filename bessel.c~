@@ -1,0 +1,21 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+int x;
+int n; 
+
+int main(void){
+  //int x;
+  //int n;
+  for (n = 0; n<10; n++){
+    printf("%d %d", x, bessel(n,x));
+  }
+  return 0;
+} 
+
+int bessel(int n,int x){
+  //nth term of a bessel func sequence
+  if (0==n) return 0;
+  if (1==n) return 1;
+  return ((2*n+1)*bessel(n-1) - x*bessel(n-2))/x;
+}

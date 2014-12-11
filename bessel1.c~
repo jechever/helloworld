@@ -1,0 +1,21 @@
+#include<stio.h>
+#include<stdlib.h>
+
+double x;
+double y;
+int m;
+int a; 
+
+int(fact(int n)){
+  if (n==1){return 1;}
+  else {
+    return n*fact(n-1);
+  }
+}
+
+int main(){
+  y = ((x/2)^(2*m+a))*(-1)/(fact(m)*fact(m+a));
+  if(m=0){return y_0;}
+  else {
+    return y+;
+  }
